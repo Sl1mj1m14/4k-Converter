@@ -14,9 +14,9 @@ pub fn main () {
         println!("Press [w] to write a 4k file, press [r] to read a 4k file");
         std::io::stdin().read_line(&mut buf).expect("And this somehow broke...");
 
-        match &buf.as_str() {
-            &"w" => words[0] = "write".to_string(),
-            &"r" => words[0] = "read".to_string(),
+        match buf.trim() {
+            "w" => words.push("write".to_string()),
+            "r" => words.push("read".to_string()),
             _ => {
                 println!("No you silly, you wrote the wrong thing");
                 buf = "".to_string();
@@ -31,13 +31,15 @@ pub fn main () {
         let mut path: String = "".to_string();
         println!("Please paste the path to your file");
         std::io::stdin().read_line(&mut path).expect("And this somehow broke...");
+        path = path.trim().to_string();
 
         let mut version: u8 = 3;
         while version > 2 {
+            buf = "".to_string();
             println!("And which 4k version would you like to {} to",words[0]);
             println!("[4k-011742] Type 0\n[4k-040144] Type 1\n[4k-javascript] Type 2");
             std::io::stdin().read_line(&mut buf).expect("And this somehow broke...");
-            version = buf.parse().unwrap();
+            version = buf.trim().parse().unwrap();
 
             if version > 2 {println!("You absolute brainless idiot, all I asked you to do was to type one god forsaken number. You literally only had to count to 2 you moron. An infant would perform better than you. Go die in a corner. Enjoy suffering in Hell.")}
         }
