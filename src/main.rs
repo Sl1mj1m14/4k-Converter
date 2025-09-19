@@ -54,7 +54,7 @@ pub fn main () {
                     println!("Would you like to preserve bricks? [yes] or [no]?");
                     std::io::stdin().read_line(&mut buf).expect("And this somehow broke...");
 
-                    match buf.as_str() {
+                    match buf.trim() {
                         "yes" => convert::read_4k(&path, version, true).expect("And, something broke somewhere..."),
                         "no" => convert::read_4k(&path, version, false).expect("And, something broke somewhere..."),
                         _ => {
