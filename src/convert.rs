@@ -96,7 +96,7 @@ pub fn write_4k (input: &str, mode: u8) {
                 1 => bytes.push(4), //Stone                
                 2 => bytes.push(1), //Grass
                 3 => {bytes.push(2) /*Randomize dirt, 2 3 6 9-15*/}, //Dirt
-                9 => if mode != 2 {bytes.push(4) /*Stone*/} else {bytes.push(9 /*Water*/)}, 
+                9 => if mode != 2 {bytes.push(2) /*Dirt*/} else {bytes.push(9 /*Water*/)}, 
                 17 => bytes.push(7), //Logs
                 18 => bytes.push(8), //Leaves
                 45 => bytes.push(5), //Bricks

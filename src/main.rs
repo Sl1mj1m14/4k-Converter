@@ -1,3 +1,7 @@
+//TO DO 
+//Option for preserving block ids
+//Potential handling for preserving world shape
+
 use std::fs;
 use flate2;
 
