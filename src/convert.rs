@@ -24,7 +24,9 @@ pub fn read_4k (input: &str, mode: u8, flag: bool) -> Result<(), mc_classic::Cla
 
     //Converting block ids & changing ints to bytes
     for i in 0..bytes.len() {
-        if mode == 2 || i+1%4 == 0 {
+        //println!("{}",i+1%4);
+        if mode == 2 || (i+1)%4 == 0 {
+            //println!("This is the current byte: {}", bytes[i]);
             if mode == 0 {
                 match bytes[i] {
                     0 => blocks.push(0), //Air
@@ -100,7 +102,7 @@ pub fn write_4k (input: &str, mode: u8) {
     let mut output= OpenOptions::new()
         .write(true)
         .create(true)
-        .open("level.dat")
+        .open("level.4k")
         .unwrap();
 
     if mode != 2 {
