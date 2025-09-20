@@ -86,10 +86,6 @@ pub fn write_4k (input: &str, mode: u8) {
 
     for block in level.blocks.unwrap() {
 
-        if mode != 2 {
-            for _ in 0..3 {bytes.push(0)}
-        }
-
         if mode == 0 {
             if block == 0 {bytes.push(0)} else {bytes.push(1)}
         } else {
@@ -109,6 +105,34 @@ pub fn write_4k (input: &str, mode: u8) {
 
     while bytes.len() > 64*64*64 {bytes.pop();}
 
+    let h: usize = if level.height.is_some() && false {level.height.unwrap() as usize} else {64};
+    let d: usize = if level.depth.is_some() && false  {level.depth.unwrap() as usize} else {64};
+    let w: usize = if level.width.is_some() && false  {level.width.unwrap() as usize} else {64};
+
+    //width is x
+    //height is z
+    //depth is y
+
+    let mut bytes1: Vec<u8> = vec![0; 64*64*64];
+
+    for x in 0..w{
+        for y in 0..d{
+            for z in 0..h{
+                bytes1[z + ((d - 1 - y) * h) + (x * d * h)] = bytes[x + (z * w) + (y * w * h)]
+            }
+        }
+    }
+
+    let mut bytes2: Vec<u8> = Vec::new();
+
+    for byte in bytes1 {
+        if mode != 2 {
+            for _ in 0..3 {bytes2.push(0)}
+        }
+        bytes2.push(byte);
+    }
+
+
     let mut output= OpenOptions::new()
         .write(true)
         .create(true)
@@ -117,9 +141,9 @@ pub fn write_4k (input: &str, mode: u8) {
 
     if mode != 2 {
         let mut encoder = GzEncoder::new(output, Compression::default());
-        encoder.write_all(&bytes).unwrap();
+        encoder.write_all(&bytes2).unwrap();
     } else {
-        output.write(&bytes);
+        output.write(&bytes2);
     }
 
 }
