@@ -1,6 +1,5 @@
 //TO DO 
 //Option for preserving block ids
-//Potential handling for preserving world shape
 
 use std::fs;
 use flate2;
@@ -48,25 +47,47 @@ pub fn main () {
             if version > 2 {println!("You absolute brainless idiot, all I asked you to do was to type one god forsaken number. You literally only had to count to 2 you moron. An infant would perform better than you. Go die in a corner. Enjoy suffering in Hell.")}
         }
 
+        buf = "".to_string();
+        let mut con: bool = true;
+        while buf == "" {
+            println!("\nWould you like to convert ids or keep raw ids?\n[c] for convert\n[k] for keep");
+            println!("If you don't know what this means, press [c]");
+            std::io::stdin().read_line(&mut buf).expect("And this somehow broke...");
+
+            match  buf.trim() {
+                "c" => con = true,
+                "k" => con = false,
+                _ => {
+                    println!("Just c or k my friend.");
+                    buf = "".to_string();
+                    continue
+                }
+            }
+        } 
+
         match words[0].as_str() {
 
-            "write" => convert::write_4k(&path, version),
+            "write" => convert::write_4k(&path, version, con),
             "read" => {
-                buf = "".to_string();
-                while buf == "" {
+                let mut brck: bool = false;
+                if con {
+                    buf = "".to_string();
+                    while buf == "" {
 
-                    println!("Would you like to preserve bricks? [yes] or [no]?");
-                    std::io::stdin().read_line(&mut buf).expect("And this somehow broke...");
+                        println!("\nWould you like to preserve bricks? [yes] or [no]?");
+                        std::io::stdin().read_line(&mut buf).expect("And this somehow broke...");
 
-                    match buf.trim() {
-                        "yes" => convert::read_4k(&path, version, true).expect("And, something broke somewhere..."),
-                        "no" => convert::read_4k(&path, version, false).expect("And, something broke somewhere..."),
-                        _ => {
-                            println!("Bro. My Guy. Just write [yes] or [no]. Not. That. Hard.");
-                            buf = "".to_string();
+                        match buf.trim() {
+                            "yes" => brck = true,
+                            "no" => brck = false,
+                            _ => {
+                                println!("Bro. My Guy. Just write [yes] or [no]. Not. That. Hard.");
+                                buf = "".to_string();
+                            }
                         }
                     }
                 }
+                convert::read_4k(&path, version, con, brck).expect("And, something broke somewhere...")
             },
             _ => ()
         }

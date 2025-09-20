@@ -5,7 +5,7 @@ use flate2::Compression;
 
 use mc_classic;
 
-pub fn read_4k (input: &str, mode: u8, flag: bool) -> Result<(), mc_classic::ClassicError> {
+pub fn read_4k (input: &str, mode: u8, conv: bool, flag: bool) -> Result<(), mc_classic::ClassicError> {
 
     //Reading in stream as bytes
     let stream: Vec<u8> = read(input).unwrap();
@@ -25,6 +25,13 @@ pub fn read_4k (input: &str, mode: u8, flag: bool) -> Result<(), mc_classic::Cla
     //Converting block ids & changing ints to bytes
     for i in 0..bytes.len() {
         if mode == 2 || (i+1)%4 == 0 {
+
+            if !conv {
+                if bytes[i] != 255 {blocks.push(bytes[i])}
+                else {blocks.push(1)}
+                continue
+            }
+
             if mode == 0 {
                 match bytes[i] {
                     0 => blocks.push(0), //Air
@@ -75,7 +82,7 @@ pub fn read_4k (input: &str, mode: u8, flag: bool) -> Result<(), mc_classic::Cla
 }
 
 
-pub fn write_4k (input: &str, mode: u8) {
+pub fn write_4k (input: &str, mode: u8, conv: bool) {
 
     let level: mc_classic::Level = mc_classic::read_level(input.to_string())
         .expect("You idiot, you gave me the wrong file");
@@ -84,6 +91,15 @@ pub fn write_4k (input: &str, mode: u8) {
     let mut bytes: Vec<u8> = Vec::new();
 
     for block in level.blocks.unwrap() {
+
+        if !conv {
+            if mode == 0 {bytes.push(block)}
+            else {
+                if block < 16 {bytes.push(block)}
+                else {bytes.push(4)}
+            }
+            continue
+        }
 
         if mode == 0 {
             if block == 0 {bytes.push(0)} else {bytes.push(1)}
