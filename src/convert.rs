@@ -24,9 +24,7 @@ pub fn read_4k (input: &str, mode: u8, flag: bool) -> Result<(), mc_classic::Cla
 
     //Converting block ids & changing ints to bytes
     for i in 0..bytes.len() {
-        //println!("{}",i+1%4);
         if mode == 2 || (i+1)%4 == 0 {
-            //println!("This is the current byte: {}", bytes[i]);
             if mode == 0 {
                 match bytes[i] {
                     0 => blocks.push(0), //Air
@@ -67,7 +65,6 @@ pub fn read_4k (input: &str, mode: u8, flag: bool) -> Result<(), mc_classic::Cla
     }
 
     level.blocks = Some(blocks1);
-    //println!("{}",level.blocks.unwrap().len()/64/64);
 
     //Setting world size
     level.width = Some(64);
