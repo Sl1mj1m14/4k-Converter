@@ -82,6 +82,7 @@ pub fn write_4k (input: &str, mode: u8) {
     let level: mc_classic::Level = mc_classic::read_level(input.to_string())
         .expect("You idiot, you gave me the wrong file");
 
+    //Converting block ids
     let mut bytes: Vec<u8> = Vec::new();
 
     for block in level.blocks.unwrap() {
@@ -103,36 +104,97 @@ pub fn write_4k (input: &str, mode: u8) {
         }
     }
 
-    while bytes.len() > 64*64*64 {bytes.pop();}
+    let mut h: usize = if level.height.is_some() {level.height.unwrap() as usize} else {64};
+    let mut d: usize = if level.depth.is_some() {level.depth.unwrap() as usize} else {64};
+    let mut w: usize = if level.width.is_some() {level.width.unwrap() as usize} else {64};
 
-    let h: usize = if level.height.is_some() && false {level.height.unwrap() as usize} else {64};
-    let d: usize = if level.depth.is_some() && false  {level.depth.unwrap() as usize} else {64};
-    let w: usize = if level.width.is_some() && false  {level.width.unwrap() as usize} else {64};
+    //Pruning world
+    let mut bytes1: Vec<u8> = Vec::new();
 
-    //width is x
-    //height is z
-    //depth is y
-
-    let mut bytes1: Vec<u8> = vec![0; 64*64*64];
-
-    for x in 0..w{
-        for y in 0..d{
-            for z in 0..h{
-                bytes1[z + ((d - 1 - y) * h) + (x * d * h)] = bytes[x + (z * w) + (y * w * h)]
+    for y in 0..d {
+        for z in 0..h {
+            for x in 0..w {
+                if y >= 64 || z >= 64 || x >= 64 {continue}
+                bytes1.push(bytes[x + (z * w) + (y * w * h)])
             }
         }
     }
 
-    let mut bytes2: Vec<u8> = Vec::new();
+    if h > 64 {h = 64}
+    if d > 64 {d = 64}
+    if w > 64 {w = 64}
 
-    for byte in bytes1 {
-        if mode != 2 {
-            for _ in 0..3 {bytes2.push(0)}
-        }
-        bytes2.push(byte);
+    /***************************************************** */
+
+    /*while d > 64 {
+        for _ in 0..h*w {bytes.pop();}
+        d -= 1;
     }
 
+    while h > 64 {
+        for x in 0..w {
+            for y in 0..d {
+                //println!("{}",d*w*h);
+                //println!("{}",(d-1-y) + ((w-1-x) * d) + ((h-1) * w * d));
+                //println!("{}",((d-1-y)+((w-1-x)*d)));
+                //bytes[(d-1-y) + ((w-1-x) * d) + ((h-1) * w * d)] = 255;
+                //x z y
+                //bytes[(w-1-x) + ((h-1) * w) + ((d-1-y) * w * h)] = 255;
+                bytes[(w-1-x) + ((h-1) * w) + ((d-1-y) * w * h)] = 255;
+            }
+        }
+        h -= 1;
+        println!("Sheared level to {}",h)
+    }
 
+    println!("{}",bytes.len());
+    bytes.retain(|&b| b != 255);
+    println!("{}",bytes.len());
+    println!("{}",64*64*256);
+
+    while w > 64 {
+        for z in 0..h {
+            for y in 0..d {
+                //bytes[(d-1-y) + ((h-1-z) * d) + ((w-1) * h * d)] = 255;
+                bytes[(w-1) + ((h-1-z) * w) + ((d-1-y) * w * h)] = 255;
+            }
+        }
+        w -= 1;
+        println!("Sheared level to {}",w)
+    }
+
+    bytes.retain(|&b| b != 255);
+
+    while bytes.len() > 64*64*64 {bytes.pop();}
+
+    //width is x
+    //height is z
+    //depth is y */
+
+    /***************************************************** */
+
+    //Fixing positioning of the world
+    let mut bytes2: Vec<u8> = vec![0; w*d*h];
+
+    for x in 0..w{
+        for y in 0..d{
+            for z in 0..h{
+                bytes2[z + ((d - 1 - y) * h) + (x * d * h)] = bytes1[x + (z * w) + (y * w * h)]
+            }
+        }
+    }
+
+    //Converting byte array to int array
+    let mut bytes3: Vec<u8> = Vec::new();
+
+    for byte in bytes2 {
+        if mode != 2 {
+            for _ in 0..3 {bytes3.push(0)}
+        }
+        bytes3.push(byte);
+    }
+
+    //Writing world
     let mut output= OpenOptions::new()
         .write(true)
         .create(true)
@@ -141,9 +203,9 @@ pub fn write_4k (input: &str, mode: u8) {
 
     if mode != 2 {
         let mut encoder = GzEncoder::new(output, Compression::default());
-        encoder.write_all(&bytes2).unwrap();
+        encoder.write_all(&bytes3).unwrap();
     } else {
-        output.write(&bytes2);
+        output.write(&bytes3);
     }
 
 }
