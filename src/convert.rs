@@ -77,6 +77,7 @@ pub fn read_4k (input: &str, mode: u8, flag: bool) -> Result<(), mc_classic::Cla
     return mc_classic::level_to_classic_13(level, "level.dat".to_string());
 }
 
+
 pub fn write_4k (input: &str, mode: u8) {
 
     let level: mc_classic::Level = mc_classic::read_level(input.to_string())
@@ -123,55 +124,6 @@ pub fn write_4k (input: &str, mode: u8) {
     if h > 64 {h = 64}
     if d > 64 {d = 64}
     if w > 64 {w = 64}
-
-    /***************************************************** */
-
-    /*while d > 64 {
-        for _ in 0..h*w {bytes.pop();}
-        d -= 1;
-    }
-
-    while h > 64 {
-        for x in 0..w {
-            for y in 0..d {
-                //println!("{}",d*w*h);
-                //println!("{}",(d-1-y) + ((w-1-x) * d) + ((h-1) * w * d));
-                //println!("{}",((d-1-y)+((w-1-x)*d)));
-                //bytes[(d-1-y) + ((w-1-x) * d) + ((h-1) * w * d)] = 255;
-                //x z y
-                //bytes[(w-1-x) + ((h-1) * w) + ((d-1-y) * w * h)] = 255;
-                bytes[(w-1-x) + ((h-1) * w) + ((d-1-y) * w * h)] = 255;
-            }
-        }
-        h -= 1;
-        println!("Sheared level to {}",h)
-    }
-
-    println!("{}",bytes.len());
-    bytes.retain(|&b| b != 255);
-    println!("{}",bytes.len());
-    println!("{}",64*64*256);
-
-    while w > 64 {
-        for z in 0..h {
-            for y in 0..d {
-                //bytes[(d-1-y) + ((h-1-z) * d) + ((w-1) * h * d)] = 255;
-                bytes[(w-1) + ((h-1-z) * w) + ((d-1-y) * w * h)] = 255;
-            }
-        }
-        w -= 1;
-        println!("Sheared level to {}",w)
-    }
-
-    bytes.retain(|&b| b != 255);
-
-    while bytes.len() > 64*64*64 {bytes.pop();}
-
-    //width is x
-    //height is z
-    //depth is y */
-
-    /***************************************************** */
 
     //Fixing positioning of the world
     let mut bytes2: Vec<u8> = vec![0; w*d*h];
