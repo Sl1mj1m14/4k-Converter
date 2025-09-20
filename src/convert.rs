@@ -56,7 +56,17 @@ pub fn read_4k (input: &str, mode: u8, flag: bool) -> Result<(), mc_classic::Cla
         }
     }
 
-    level.blocks = Some(blocks);
+    let mut blocks1: Vec<u8> = vec![0; 64*64*64];
+
+    for x in 0..64{
+        for y in 0..64{
+            for z in 0..64{
+                blocks1[x + (z * 64) + (y * 64 * 64)] = blocks[z + ((63 - y) * 64) + (x * 64 * 64)]
+            }
+        }
+    }
+
+    level.blocks = Some(blocks1);
     //println!("{}",level.blocks.unwrap().len()/64/64);
 
     //Setting world size
