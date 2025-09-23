@@ -118,9 +118,9 @@ pub fn write_4k (input: &str, mode: u8, conv: bool) {
         }
     }
 
-    let mut h: usize = if level.height.is_some() {level.height.unwrap() as usize} else {64};
+    let mut h: usize = if level.height.is_some() {level.height.unwrap() as usize} else {256};
     let mut d: usize = if level.depth.is_some() {level.depth.unwrap() as usize} else {64};
-    let mut w: usize = if level.width.is_some() {level.width.unwrap() as usize} else {64};
+    let mut w: usize = if level.width.is_some() {level.width.unwrap() as usize} else {256};
 
     //Pruning world
     let mut bytes1: Vec<u8> = Vec::new();
